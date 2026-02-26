@@ -93,6 +93,38 @@
         <p id="error-msg" class="error-msg" role="alert" aria-live="polite"></p>
     </section>
 
+    <!-- Step 4: Analyze -->
+    <section class="card" aria-label="Step 4: Analyze for Liver Region">
+        <div class="step-badge">04</div>
+        <h2 class="card-title">Analyze for Liver Region</h2>
+        <p class="card-desc">Detect whether the image contains a liver region using contour analysis</p>
+
+        <button id="analyze-btn" class="btn-process" disabled aria-label="Analyze image for liver region">
+            <span class="btn-text">Analyze Image</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+
+        <p id="analyze-error-msg" class="error-msg" role="alert" aria-live="polite"></p>
+
+        <div id="analyze-result" class="analyze-result" hidden>
+            <h3 class="analyze-result-title">Detection Result</h3>
+            <div class="analyze-result-grid">
+                <div class="analyze-stat">
+                    <span class="analyze-stat-label">Detected</span>
+                    <span class="analyze-stat-value" id="analyze-detected"></span>
+                </div>
+                <div class="analyze-stat">
+                    <span class="analyze-stat-label">Confidence</span>
+                    <span class="analyze-stat-value" id="analyze-confidence"></span>
+                </div>
+            </div>
+            <div class="analyze-bbox" id="analyze-bbox-section">
+                <span class="analyze-stat-label">Bounding Box</span>
+                <pre class="analyze-bbox-pre" id="analyze-bbox"></pre>
+            </div>
+        </div>
+    </section>
+
     <!-- Results -->
     <section class="card results-card" id="results-section" aria-label="Image comparison results" hidden>
         <h2 class="card-title results-title">Results</h2>

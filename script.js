@@ -4,29 +4,38 @@
  * Handles:
  *  1. Drag-and-drop + click-to-browse image upload
  *  2. Phase selection (arterial / venous)
- *  3. Sending image + phase to the backend API
- *  4. Displaying original and processed images side by side
+ *  3. Sending image + phase to the backend /process API
+ *  4. Sending image to the backend /analyze API for liver detection
+ *  5. Displaying original and processed images side by side
  *
  * NOTE: Update BACKEND_URL below after deploying to Hugging Face Spaces.
+ * For the feature/organ-detection branch, use the NEW HF Space URL.
  */
 
 // ─── Configuration ────────────────────────────────────────────────────────────
-// Replace this with your actual Hugging Face Spaces URL after deployment.
-// Example: "https://your-username-medtech-api.hf.space"
-const BACKEND_URL = "https://baha2rm98-medtech-api.hf.space";
+const BACKEND_URL = "https://YOUR-NEW-HF-SPACE.hf.space";
 
 // ─── DOM References ───────────────────────────────────────────────────────────
 const dropZone = document.getElementById("drop-zone");
 const dropContent = document.getElementById("drop-zone-content");
 const fileInput = document.getElementById("file-input");
 const processBtn = document.getElementById("process-btn");
+const analyzeBtn = document.getElementById("analyze-btn");
 const errorMsg = document.getElementById("error-msg");
+const analyzeErrorMsg = document.getElementById("analyze-error-msg");
 const resultsSection = document.getElementById("results-section");
 const originalImg = document.getElementById("original-img");
 const processedImg = document.getElementById("processed-img");
 const processedBadge = document.getElementById("processed-badge");
 const processedLabel = document.getElementById("processed-label");
 const resultsDesc = document.getElementById("results-desc");
+
+// Analyze result elements
+const analyzeResult = document.getElementById("analyze-result");
+const analyzeDetected = document.getElementById("analyze-detected");
+const analyzeConfidence = document.getElementById("analyze-confidence");
+const analyzeBboxSection = document.getElementById("analyze-bbox-section");
+const analyzeBbox = document.getElementById("analyze-bbox");
 
 // ─── State ────────────────────────────────────────────────────────────────────
 let uploadedFile = null;
@@ -52,6 +61,8 @@ function handleFile(file) {
 
     uploadedFile = file;
     clearError();
+    clearAnalyzeError();
+    analyzeResult.hidden = true; // Reset previous analyze result on new file
 
     // Show preview inside the drop zone
     const reader = new FileReader();
@@ -69,7 +80,7 @@ function handleFile(file) {
     };
     reader.readAsDataURL(file);
 
-    updateProcessButton();
+    updateButtons();
 }
 
 // Drag-and-drop events
@@ -104,11 +115,10 @@ dropZone.addEventListener("keydown", (e) => {
 
 // ─── Phase Selection ──────────────────────────────────────────────────────────
 
-// Update the process button whenever a phase radio is changed
 document.querySelectorAll('input[name="phase"]').forEach((radio) => {
     radio.addEventListener("change", () => {
         clearError();
-        updateProcessButton();
+        updateButtons();
     });
 });
 
@@ -120,18 +130,18 @@ function getSelectedPhase() {
 
 // ─── Button State ─────────────────────────────────────────────────────────────
 
-/** Enables the Process button only when both a file and a phase are selected */
-function updateProcessButton() {
+/** Enables Process button when both file and phase are selected; Analyze when file is selected */
+function updateButtons() {
     processBtn.disabled = !(uploadedFile && getSelectedPhase());
+    analyzeBtn.disabled = !uploadedFile;
 }
 
-// ─── Form Submission → API Call ───────────────────────────────────────────────
+// ─── /process API Call ────────────────────────────────────────────────────────
 
 processBtn.addEventListener("click", async () => {
     const phase = getSelectedPhase();
     if (!uploadedFile || !phase) return;
 
-    // Show loading state
     processBtn.classList.add("loading");
     processBtn.disabled = true;
     clearError();
@@ -157,15 +167,10 @@ processBtn.addEventListener("click", async () => {
             throw new Error("No processed image received from server.");
         }
 
-        // ── Display results ──
-        // Original image (read from the uploaded file)
-        const originalURL = URL.createObjectURL(uploadedFile);
-        originalImg.src = originalURL;
-
-        // Processed image (base64 from backend)
+        // Display results
+        originalImg.src = URL.createObjectURL(uploadedFile);
         processedImg.src = data.processed_image;
 
-        // Update panel labels based on phase
         if (phase === "arterial") {
             processedBadge.textContent = "B";
             processedLabel.textContent = "Arterial Phase";
@@ -176,25 +181,73 @@ processBtn.addEventListener("click", async () => {
             resultsDesc.textContent = "Gaussian-smoothed image (venous phase simulation)";
         }
 
-        // Show the results section with animation
         resultsSection.hidden = false;
         resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
 
     } catch (err) {
         showError(`Processing failed: ${err.message}`);
     } finally {
-        // Restore button
         processBtn.classList.remove("loading");
-        updateProcessButton();
+        updateButtons();
+    }
+});
+
+// ─── /analyze API Call ────────────────────────────────────────────────────────
+
+analyzeBtn.addEventListener("click", async () => {
+    if (!uploadedFile) return;
+
+    analyzeBtn.classList.add("loading");
+    analyzeBtn.disabled = true;
+    clearAnalyzeError();
+    analyzeResult.hidden = true;
+
+    try {
+        const formData = new FormData();
+        formData.append("file", uploadedFile);
+
+        const response = await fetch(`${BACKEND_URL}/analyze`, {
+            method: "POST",
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.detail || `Server returned ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Display detection result
+        analyzeDetected.textContent = data.detected ? "✅ Yes" : "❌ No";
+        analyzeDetected.style.color = data.detected
+            ? "var(--accent-teal, #4ecdc4)"
+            : "var(--error, #e74c3c)";
+        analyzeConfidence.textContent = `${(data.confidence * 100).toFixed(0)}%`;
+
+        if (data.bounding_box) {
+            const bb = data.bounding_box;
+            analyzeBbox.textContent =
+                `x: ${bb.x}px\ny: ${bb.y}px\nwidth:  ${bb.width}px\nheight: ${bb.height}px`;
+            analyzeBboxSection.hidden = false;
+        } else {
+            analyzeBboxSection.hidden = true;
+        }
+
+        analyzeResult.hidden = false;
+        analyzeResult.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    } catch (err) {
+        showAnalyzeError(`Analysis failed: ${err.message}`);
+    } finally {
+        analyzeBtn.classList.remove("loading");
+        updateButtons();
     }
 });
 
 // ─── Error Utilities ──────────────────────────────────────────────────────────
 
-function showError(msg) {
-    errorMsg.textContent = msg;
-}
-
-function clearError() {
-    errorMsg.textContent = "";
-}
+function showError(msg) { errorMsg.textContent = msg; }
+function clearError() { errorMsg.textContent = ""; }
+function showAnalyzeError(msg) { analyzeErrorMsg.textContent = msg; }
+function clearAnalyzeError() { analyzeErrorMsg.textContent = ""; }
