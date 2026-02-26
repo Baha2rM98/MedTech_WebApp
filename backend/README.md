@@ -2,7 +2,7 @@
 title: MedTech Image Processing API
 emoji: 🩻
 colorFrom: blue
-colorTo: teal
+colorTo: blue
 sdk: docker
 pinned: false
 ---
