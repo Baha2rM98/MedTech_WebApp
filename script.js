@@ -13,7 +13,7 @@
 // ─── Configuration ────────────────────────────────────────────────────────────
 // Replace this with your actual Hugging Face Spaces URL after deployment.
 // Example: "https://your-username-medtech-api.hf.space"
-const BACKEND_URL = "http://localhost:8000";
+const BACKEND_URL = "https://baha2rm98-medtech-api.hf.space";
 
 // ─── DOM References ───────────────────────────────────────────────────────────
 const dropZone = document.getElementById("drop-zone");
@@ -178,7 +178,7 @@ processBtn.addEventListener("click", async () => {
 
         // Show the results section with animation
         resultsSection.hidden = false;
-        resultsSection.scrollIntoView({behavior: "smooth", block: "start"});
+        resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
 
     } catch (err) {
         showError(`Processing failed: ${err.message}`);
