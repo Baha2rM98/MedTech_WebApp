@@ -13,7 +13,7 @@
  */
 
 // ─── Configuration ────────────────────────────────────────────────────────────
-const BACKEND_URL = "https://YOUR-NEW-HF-SPACE.hf.space";
+const BACKEND_URL = "https://baha2rm98-feature-organ-detection.hf.space";
 
 // ─── DOM References ───────────────────────────────────────────────────────────
 const dropZone = document.getElementById("drop-zone");
