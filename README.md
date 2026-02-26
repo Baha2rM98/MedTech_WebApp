@@ -11,7 +11,7 @@ A full-stack medical imaging mini web-app for simulated surgical planning. Uploa
 | Branch | Frontend | Backend API |
 |--------|----------|-------------|
 | **`main`** | [baha2rm98.github.io/MedTech_WebApp/](https://baha2rm98.github.io/MedTech_WebApp/) | [baha2rm98-medtech-api.hf.space](https://baha2rm98-medtech-api.hf.space) |
-| **`feature/organ-detection`** | *(enable GitHub Pages for this branch to get URL)* | [baha2rm98-feature-organ-detection.hf.space](https://baha2rm98-feature-organ-detection.hf.space) |
+| **`feature/organ-detection`** | [baha2rm98.github.io/MedTech_WebApp/](https://baha2rm98.github.io/MedTech_WebApp/) *(Pages set to this branch)* | [baha2rm98-feature-organ-detection.hf.space](https://baha2rm98-feature-organ-detection.hf.space) |
 
 ---
 
