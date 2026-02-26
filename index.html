@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MedTech Phase Viewer — Surgical Planning</title>
+    <meta name="description"
+          content="Upload a 2D medical image, select an imaging phase (arterial or venous), and view the original and processed images side by side."/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<!-- ===== Header ===== -->
+<header class="site-header">
+    <div class="header-inner">
+        <div class="logo">
+            <span class="logo-icon" aria-hidden="true">⚕</span>
+            <span class="logo-text">MedTech <span class="logo-accent">Phase Viewer</span></span>
+        </div>
+        <p class="header-subtitle">Simulated Surgical Imaging — Arterial &amp; Venous Phase Processing</p>
+    </div>
+</header>
+
+<!-- ===== Main ===== -->
+<main class="container" id="main">
+
+    <!-- Step 1: Upload -->
+    <section class="card" aria-label="Step 1: Upload Image">
+        <div class="step-badge">01</div>
+        <h2 class="card-title">Upload Medical Image</h2>
+        <p class="card-desc">Accepted formats: JPG, PNG (max 10 MB)</p>
+
+        <div
+                id="drop-zone"
+                class="drop-zone"
+                role="button"
+                tabindex="0"
+                aria-label="Click or drag and drop an image here"
+        >
+            <div class="drop-zone-content" id="drop-zone-content">
+                <div class="drop-icon" aria-hidden="true">🩻</div>
+                <p class="drop-primary">Drag &amp; drop your image here</p>
+                <p class="drop-secondary">or <span class="drop-link">click to browse</span></p>
+            </div>
+            <input type="file" id="file-input" accept="image/jpeg,image/png" aria-label="File upload input"/>
+        </div>
+    </section>
+
+    <!-- Step 2: Phase Selection -->
+    <section class="card" aria-label="Step 2: Select Imaging Phase">
+        <div class="step-badge">02</div>
+        <h2 class="card-title">Select Imaging Phase</h2>
+        <p class="card-desc">Choose the phase to simulate on the uploaded image</p>
+
+        <div class="phase-grid" role="radiogroup" aria-label="Imaging phase selection">
+
+            <label class="phase-card" id="phase-label-arterial">
+                <input type="radio" name="phase" value="arterial" id="phase-arterial"/>
+                <div class="phase-icon" aria-hidden="true">🔴</div>
+                <div class="phase-info">
+                    <span class="phase-name">Arterial Phase</span>
+                    <span class="phase-desc">Enhanced contrast — highlights arterial structures</span>
+                </div>
+                <div class="phase-check" aria-hidden="true"></div>
+            </label>
+
+            <label class="phase-card" id="phase-label-venous">
+                <input type="radio" name="phase" value="venous" id="phase-venous"/>
+                <div class="phase-icon" aria-hidden="true">🔵</div>
+                <div class="phase-info">
+                    <span class="phase-name">Venous Phase</span>
+                    <span class="phase-desc">Gaussian smoothing — highlights venous structures</span>
+                </div>
+                <div class="phase-check" aria-hidden="true"></div>
+            </label>
+
+        </div>
+    </section>
+
+    <!-- Step 3: Process -->
+    <section class="card process-card" aria-label="Step 3: Process">
+        <div class="step-badge">03</div>
+        <h2 class="card-title">Process Image</h2>
+        <p class="card-desc">Submit to the backend server for processing</p>
+
+        <button id="process-btn" class="btn-process" disabled aria-label="Process image">
+            <span class="btn-text">Process Image</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+
+        <p id="error-msg" class="error-msg" role="alert" aria-live="polite"></p>
+    </section>
+
+    <!-- Results -->
+    <section class="card results-card" id="results-section" aria-label="Image comparison results" hidden>
+        <h2 class="card-title results-title">Results</h2>
+        <p class="card-desc" id="results-desc"></p>
+
+        <div class="comparison-grid">
+
+            <div class="image-panel">
+                <div class="panel-header">
+                    <span class="panel-badge panel-badge--original">A</span>
+                    <span class="panel-label">Original</span>
+                </div>
+                <div class="image-frame">
+                    <img id="original-img" src="" alt="Original medical image"/>
+                </div>
+            </div>
+
+            <div class="comparison-divider" aria-hidden="true">
+                <div class="divider-line"></div>
+                <span class="divider-icon">↔</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <div class="image-panel">
+                <div class="panel-header">
+                    <span class="panel-badge panel-badge--processed" id="processed-badge">B</span>
+                    <span class="panel-label" id="processed-label">Processed</span>
+                </div>
+                <div class="image-frame">
+                    <img id="processed-img" src="" alt="Processed medical image"/>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+    <p>⚠️ For simulation purposes only. Not intended for clinical use.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
