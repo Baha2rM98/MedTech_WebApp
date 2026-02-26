@@ -10,8 +10,8 @@ A full-stack medical imaging mini web-app for simulated surgical planning. Uploa
 
 | Component | URL |
 |-----------|-----|
-| **Frontend** | *(GitHub Pages URL — update after deployment)* |
-| **Backend API** | *(Hugging Face Spaces URL — update after deployment)* |
+| **Frontend** | [https://baha2rm98.github.io/MedTech_WebApp/](https://baha2rm98.github.io/MedTech_WebApp/) |
+| **Backend API** | [https://baha2rm98-medtech-api.hf.space](https://baha2rm98-medtech-api.hf.space) |
 
 ---
 
